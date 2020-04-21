@@ -42,9 +42,10 @@ NodeMcu(ESP-12E)开发板
     <td><img src="img/2.jpg" title="index"></td>
     <td><img src="img/3.jpg" title="post"></td>
 
+  </tr>
+</table>
 
 管理页面
-
 <table>
   <tr>
     <th>172.0.0.1/creds</th>
@@ -56,13 +57,16 @@ NodeMcu(ESP-12E)开发板
     <td><img src="img/5.jpg" title="info"></td>
     <td><img src="img/6.jpg" title="data"></td>
 
-
+  </tr>
+</table>
 
 ### 串口输出
 开启串口监听，波特率为115200。上电后会看到这样的输出。此时*历史记录.txt*里面是没有捕获内容的，所以只能读出“历史记录”这四个字
+
 <img width="80%" src="img/7.png">
 
 当有人输入了邮箱和密码，会立刻执行一次写入数据，把捕获的内容新增到*历史记录.txt*内，并显示出来
+
 <img width="80%" src="img/8.png">
 
 
