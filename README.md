@@ -67,7 +67,7 @@ NodeMcu(ESP-12E)开发板
 
 
 
-## 免责声明
+# 免责声明
 该项目用于测试和教育目的。请限制在您自己的网络和设备上使用它。 若您对程序进行不当修改或在不适宜的场合使用该项目造成不良后果，我不承担任何责任。请遵守您所在国家和地区的相关法律法规。
 
 The project is used for testing and educational purposes. Please only use project on your own device. If you make improper modifications to the program or use the project in an inappropriate place to cause undesirable consequences, I will not be held responsible. Please abide by the relevant laws and regulations of your country and region.
